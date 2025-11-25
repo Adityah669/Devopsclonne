@@ -1,5 +1,15 @@
 https://azure.microsoft.com/en-in/pricing/details/virtual-machines/series/
 
+To login to the VM using PEM KEY first give the file permissions first as :
+
+chmod 600 /path of the pem file 
+
+To login to a VM using pem key you can use the following command as :
+
+ssh -i /path where the pem key is available  username@vm ip
+
+
+
 Here’s a simplified and easy-to-understand summary of **Azure Virtual Machine (VM) pricing by series** that you can refer to anytime:
 
 ***
