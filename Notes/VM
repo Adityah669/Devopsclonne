@@ -1,0 +1,59 @@
+https://azure.microsoft.com/en-in/pricing/details/virtual-machines/series/
+
+Here’s a simplified and easy-to-understand summary of **Azure Virtual Machine (VM) pricing by series** that you can refer to anytime:
+
+***
+
+### **1. General Purpose (Balanced CPU & Memory)**
+
+*   **Series:** B, Dsv3, Dsv4
+*   **Best for:** Web servers, small databases, development/test environments.
+*   **Key Feature:** Balanced compute, memory, and storage.
+*   **Cost:** Lower to moderate.
+
+***
+
+### **2. Compute Optimized (High CPU)**
+
+*   **Series:** Fsv2
+*   **Best for:** High CPU workloads like batch processing, gaming servers.
+*   **Key Feature:** More CPU cores per memory unit.
+*   **Cost:** Moderate.
+
+***
+
+### **3. Memory Optimized (High RAM)**
+
+*   **Series:** Esv3, Esv4, M
+*   **Best for:** Large databases, in-memory caching, analytics.
+*   **Key Feature:** High memory-to-core ratio.
+*   **Cost:** Higher than general purpose.
+
+***
+
+### **4. Storage Optimized**
+
+*   **Series:** Lsv2
+*   **Best for:** Big data, SQL/NoSQL databases, data warehousing.
+*   **Key Feature:** High disk throughput and IOPS.
+*   **Cost:** Moderate to high.
+
+***
+
+### **5. GPU Optimized**
+
+*   **Series:** NC, ND, NV
+*   **Best for:** AI/ML, deep learning, graphics rendering.
+*   **Key Feature:** Dedicated NVIDIA GPUs.
+*   **Cost:** High.
+
+***
+
+### **6. High Performance Compute (HPC)**
+
+*   **Series:** H
+*   **Best for:** Scientific simulations, engineering workloads.
+*   **Key Feature:** High CPU, RDMA network.
+*   **Cost:** High.
+
+
