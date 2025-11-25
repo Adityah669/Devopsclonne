@@ -173,15 +173,3 @@ Each hop is controlled by NSG/security rules.
 * App tier in another
 * Database tier in another
 
----
-
-# Want a hands-on lab where you create a VNet + subnets + NSG + VMs with screenshots or CLI commands?
-
-I can generate:
-
-✔ Step-by-step Azure Portal Lab
-✔ Azure CLI commands
-✔ Terraform
-✔ Diagram for interview
-
-Tell me which version you want.
