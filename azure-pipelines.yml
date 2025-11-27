@@ -9,16 +9,15 @@ trigger:
 pool:
  name: 'Azure Pipelines'
 
-
 variables:
-  azureServiceConnection: 'Myconnectionactive'        # DevOps Service Connection to Azure
+  azureServiceConnection: 'Myconnectionactive'
   subscriptionId: '12486a52-70e3-4ae6-9f94-e6bacd147419'
   resourceGroup: 'demonewtest_group'
-  location: 'canadacentral'                   # your template pins this region
+  location: 'canadacentral'
 
-  # Relative paths inside your GitHub repo
-  templateFile: 'infra/template.json'       # e.g., infra/template.json
-  parametersFile: 'infra/parameters.json'   # e.g., infra/parameters.json
+  # Update to your actual repo paths (case-sensitive)
+  templateRelPath: 'infra/template.json'
+  parametersRelPath: 'infra/parameters.json'
 
 stages:
 - stage: Deploy
@@ -29,7 +28,18 @@ stages:
     steps:
     - checkout: self
 
-    # (Optional) Preflight to validate RG & providers
+    # Verify files exist where we think they do
+    - script: |
+        echo "Workspace: $(Build.SourcesDirectory)"
+        ls -R "$(Build.SourcesDirectory)"
+        echo "Expecting:"
+        echo "  $(Build.SourcesDirectory)/$(templateRelPath)"
+        echo "  $(Build.SourcesDirectory)/$(parametersRelPath)"
+        test -f "$(Build.SourcesDirectory)/$(templateRelPath)" || (echo "Template NOT found" && exit 1)
+        test -f "$(Build.SourcesDirectory)/$(parametersRelPath)" || (echo "Parameters NOT found" && exit 1)
+      displayName: Verify files are present
+
+    # Preflight (optional)
     - task: AzureCLI@2
       displayName: Preflight checks
       inputs:
@@ -38,12 +48,12 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           set -e
-                  echo "Validating resource group exists..."
-                  az group show -n $(resourceGroup) --query name -o tsv
-                  echo "Ensuring providers are registered..."
-                  az provider register --namespace Microsoft.Logic
-                  az provider register --namespace Microsoft.Web
-                  echo "Preflight OK"
+          echo "Validating resource group exists..."
+          az group show -n $(resourceGroup) --query name -o tsv
+          echo "Ensuring providers are registered..."
+          az provider register --namespace Microsoft.Logic
+          az provider register --namespace Microsoft.Web
+          echo "Preflight OK"
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Logic App (Consumption)
@@ -55,8 +65,20 @@ stages:
         resourceGroupName: '$(resourceGroup)'
         location: '$(location)'
         templateLocation: 'Linked artifact'
-        csmFile: '$(templateFile)'
-        csmParametersFile: '$(parametersFile)'
+        # Use explicit absolute paths anchored to the workspace
+        csmFile: '$(Build.SourcesDirectory)/$(templateRelPath)'
+        csmParametersFile: '$(Build.SourcesDirectory)/$(parametersRelPath)'
         deploymentMode: 'Incremental'
 
-    # (Optional) Post‑deploy presence check
+    # Post‑deploy presence check (optional)
+    - task: AzureCLI@2
+      displayName: Post‑deploy check
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Logic Apps in $(resourceGroup):"
+          az resource list \
+            --resource-group $(resourceGroup) \
+            --resource-type "Microsoft.Logic/workflows" \
