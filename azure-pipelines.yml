@@ -34,17 +34,16 @@ stages:
       displayName: Preflight checks
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: bash
-        scriptLocation: inlineScript
-      # Feel free to remove if you don’t want preflight
-      inlineScript: |
-        set -e
-        echo "Validating resource group exists..."
-        az group show -n $(resourceGroup) --query name -o tsv
-        echo "Ensuring providers are registered..."
-        az provider register --namespace Microsoft.Logic
-        az provider register --namespace Microsoft.Web
-        echo "Preflight OK"
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          set -e
+                  echo "Validating resource group exists..."
+                  az group show -n $(resourceGroup) --query name -o tsv
+                  echo "Ensuring providers are registered..."
+                  az provider register --namespace Microsoft.Logic
+                  az provider register --namespace Microsoft.Web
+                  echo "Preflight OK"
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Logic App (Consumption)
@@ -61,16 +60,4 @@ stages:
         deploymentMode: 'Incremental'
 
     # (Optional) Post‑deploy presence check
-    - task: AzureCLI@2
-      displayName: Post‑deploy check
-      inputs:
-        azureSubscription: '$(azureServiceConnection)'
-        scriptType: bash
-        scriptLocation: inlineScript
-      inlineScript: |
-        # Derive the Logic App name from parameters.json (if fixed), otherwise skip
-        echo "Listing Logic Apps in RG to confirm deployment..."
-        az resource list \
-          --resource-group $(resourceGroup) \
-          --resource-type "Microsoft.Logic/workflows" \
 
