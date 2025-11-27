@@ -17,8 +17,8 @@ variables:
   location: 'canadacentral'                   # your template pins this region
 
   # Relative paths inside your GitHub repo
-  templateFile: 'path/to/template.json'       # e.g., infra/template.json
-  parametersFile: 'path/to/parameters.json'   # e.g., infra/parameters.json
+  templateFile: 'infra/template.json'       # e.g., infra/template.json
+  parametersFile: 'infra/parameters.json'   # e.g., infra/parameters.json
 
 stages:
 - stage: Deploy
