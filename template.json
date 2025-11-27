@@ -1,0 +1,105 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_consumptionla_name": {
+            "defaultValue": "consumptionla",
+            "type": "String"
+        },
+        "connections_azureblob_externalid": {
+            "defaultValue": "/subscriptions/12486a52-70e3-4ae6-9f94-e6bacd147419/resourceGroups/demonewtest_group/providers/Microsoft.Web/connections/azureblob",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_consumptionla_name')]",
+            "location": "canadacentral",
+            "identity": {
+                "type": "SystemAssigned, UserAssigned",
+                "userAssignedIdentities": {
+                    "/subscriptions/12486a52-70e3-4ae6-9f94-e6bacd147419/resourceGroups/demonewtest_group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/Userassignedstandard-uami": {}
+                }
+            },
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "DelayUntilTime": {
+                            "defaultValue": "@addMinutes(utcNow(), 15)",
+                            "type": "String"
+                        },
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_an_HTTP_request_is_received": {
+                            "type": "Request",
+                            "kind": "Http"
+                        }
+                    },
+                    "actions": {
+                        "Lists_blobs_(V2)": {
+                            "runAfter": {
+                                "Initialize_variables": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('demonewtestgroupb2e7'))}/foldersV2/@{encodeURIComponent(encodeURIComponent('/demonew'))}",
+                                "queries": {
+                                    "nextPageMarker": "",
+                                    "useFlatListing": false
+                                }
+                            }
+                        },
+                        "Initialize_variables": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "new",
+                                        "type": "string",
+                                        "value": "@{triggerBody()}"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azureblob": {
+                                "id": "/subscriptions/12486a52-70e3-4ae6-9f94-e6bacd147419/providers/Microsoft.Web/locations/canadacentral/managedApis/azureblob",
+                                "connectionId": "[parameters('connections_azureblob_externalid')]",
+                                "connectionName": "azureblob",
+                                "connectionProperties": {
+                                    "authentication": {
+                                        "type": "ManagedServiceIdentity"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
